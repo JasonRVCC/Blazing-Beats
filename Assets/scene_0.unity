@@ -190,10 +190,14 @@ Transform:
   m_Father: {fileID: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 13
 =======
   m_RootOrder: 14
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 12
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 12
 >>>>>>> parent of f1969a1... Various changes
@@ -280,6 +284,7 @@ Transform:
   m_Father: {fileID: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &213430207
@@ -314,6 +319,9 @@ Transform:
 =======
   m_RootOrder: 13
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 11
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 11
 >>>>>>> parent of f1969a1... Various changes
@@ -484,6 +492,7 @@ Transform:
   m_Father: {fileID: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &272848237
@@ -540,6 +549,11 @@ MonoBehaviour:
   m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 --- !u!1001 &475758438
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &371743472
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -682,10 +696,14 @@ Transform:
   m_Father: {fileID: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 7
 =======
   m_RootOrder: 8
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 6
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 6
 >>>>>>> parent of f1969a1... Various changes
@@ -772,10 +790,14 @@ Transform:
   m_Father: {fileID: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 9
 =======
   m_RootOrder: 10
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 8
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 8
 >>>>>>> parent of f1969a1... Various changes
@@ -862,10 +884,14 @@ Transform:
   m_Father: {fileID: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 10
 =======
   m_RootOrder: 11
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 9
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 9
 >>>>>>> parent of f1969a1... Various changes
@@ -1111,6 +1137,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 16
 <<<<<<< HEAD
 =======
@@ -1200,6 +1227,9 @@ Transform:
 =======
   m_RootOrder: 15
 >>>>>>> parent of f1969a1... Various changes
+=======
+  m_RootOrder: 15
+>>>>>>> parent of f1969a1... Various changes
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1158491157
 GameObject:
@@ -1283,10 +1313,14 @@ Transform:
   m_Father: {fileID: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 8
 =======
   m_RootOrder: 9
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 7
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 7
 >>>>>>> parent of f1969a1... Various changes
@@ -1373,10 +1407,14 @@ Transform:
   m_Father: {fileID: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 11
 =======
   m_RootOrder: 12
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 10
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 10
 >>>>>>> parent of f1969a1... Various changes
@@ -1463,10 +1501,14 @@ Transform:
   m_Father: {fileID: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 14
 =======
   m_RootOrder: 15
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 13
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 13
 >>>>>>> parent of f1969a1... Various changes
@@ -1538,6 +1580,9 @@ Transform:
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of f1969a1... Various changes
 =======
 >>>>>>> parent of f1969a1... Various changes
 --- !u!1 &1566201598
@@ -1569,10 +1614,15 @@ Transform:
   - {fileID: 1696624423}
   m_Father: {fileID: 0}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 80, z: 0}
 =======
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+  m_RootOrder: 16
+  m_LocalEulerAnglesHint: {x: 0, y: 80, z: 0}
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 80, z: 0}
@@ -1647,8 +1697,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_RootOrder: 4
 <<<<<<< HEAD
+=======
+  m_RootOrder: 3
+>>>>>>> parent of f1969a1... Various changes
 =======
   m_RootOrder: 3
 >>>>>>> parent of f1969a1... Various changes
@@ -1683,8 +1737,11 @@ Transform:
   m_Father: {fileID: 1566201599}
   m_RootOrder: 1
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> eb9c8849844a66e9dda988ba7f2728491d1daccc
+=======
+>>>>>>> parent of f1969a1... Various changes
 =======
 >>>>>>> parent of f1969a1... Various changes
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
