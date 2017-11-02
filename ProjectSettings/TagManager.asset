@@ -6,7 +6,6 @@ TagManager:
   tags:
   - Player1
   - Player2
-  - Collectable
   layers:
   - Default
   - TransparentFX
