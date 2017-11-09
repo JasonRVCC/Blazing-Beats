@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour {
 
 	public int playerNum;
 	public Text collectText;
+	public Text lapText;
+	public Text victoryText;
 
 	[Header("Tilting")]
 	public float leanHorizontal;
@@ -22,6 +24,14 @@ public class PlayerController : MonoBehaviour {
 	public float maxAngleVertical;
 
 
+	private int curLap = 1;
+	private int laps = 3;
+	private int place = 0;
+
+	private GameDriver gameDriver;
+
+	private bool passedCheckPoint = false;
+
 	private Transform playerTransform;
 	private Vector3 eulerRotation;
 	private Vector3 curRotation;
@@ -29,13 +39,17 @@ public class PlayerController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start (){
+		gameDriver = GameObject.FindGameObjectWithTag ("GameDriver").GetComponent<GameDriver> ();
 		playerTransform = this.transform;
+		victoryText.text = "";
 		curRotation = playerTransform.rotation.eulerAngles;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		collectText.text = "Orbs" + collectCount;
+		lapText.text = "Lap: " + curLap + "/" + laps;
+
 		//Player Movement
 		//Vector3 move = playerTransform.rotation * Vector3.forward;
 		/*
@@ -65,6 +79,9 @@ public class PlayerController : MonoBehaviour {
 		}*/
 
 		//Debug.Log (curSpeed);
+		this.gameObject.transform.Rotate(new Vector3(0,leanHorizontal * Input.GetAxis("Horizontal"+playerNum),0));
+		this.GetComponent<Rigidbody>().velocity = Vector3.RotateTowards (this.GetComponent<Rigidbody> ().velocity, transform.forward, leanHorizontal * Time.deltaTime, 0.0f);
+		//this.GetComponent<Rigidbody> ().AddTorque (transform.up * leanHorizontal * Input.GetAxis("Horizontal"+playerNum));
 		this.GetComponent<Rigidbody> ().AddForce (transform.forward * acceleration * Input.GetAxis("Vertical"+playerNum), ForceMode.Acceleration);
 		if (this.GetComponent<Rigidbody> ().velocity.magnitude > maxSpeed) {
 			this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * maxSpeed;
@@ -74,7 +91,7 @@ public class PlayerController : MonoBehaviour {
 		//playerTransform.position += playerTransform.forward * curSpeed/4;
 		//this.gameObject.GetComponent<Rigidbody>().AddRelativeForce(new Vector3 (0, 0, acceleration * -Input.GetAxis ("Vertical")));
 		//this.gameObject.GetComponent<Rigidbody> ().velocity = new Vector3 (0, 0, acceleration * -Input.GetAxis ("Vertical"));
-		this.gameObject.transform.Rotate(new Vector3(0,leanHorizontal * Input.GetAxis("Horizontal"+playerNum),0));
+		//this.gameObject.transform.Rotate(new Vector3(0,leanHorizontal * Input.GetAxis("Horizontal"+playerNum),0));
 		//curVelocity = this.gameObject.GetComponent<Rigidbody> ().velocity;
 		//Debug.Log (curVelocity);
 
@@ -110,9 +127,40 @@ public class PlayerController : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other){
 		Debug.Log ("hit");
-		if (other.gameObject.tag == "Collectable") {
-			collectCount += 1;
-			GameObject.Destroy (other.gameObject);
+		string tag = other.gameObject.tag;
+		if (tag == "Collectable") {
+			if (!other.gameObject.GetComponent<MusicBall> ().IsCollected ()) {
+				other.gameObject.GetComponent<MusicBall> ().SetCollected ();
+				GameObject.Destroy (other.gameObject);
+				collectCount += 1;
+			}
+		}
+		if(tag == "Check1"){
+			if(passedCheckPoint){
+				passedCheckPoint = false;
+			}
+			else if(!passedCheckPoint){
+				passedCheckPoint = true;
+			}
+		}
+		if (tag == "FinishLine") {
+			if (passedCheckPoint) {
+				if (curLap < laps) {
+					curLap += 1;
+				} else if (curLap == laps) {
+					place = gameDriver.Finish (playerNum);
+					if (place%10 == 1) {
+						victoryText.text = place + "st";
+					}
+					else if (place % 10 == 2) {
+						victoryText.text = place + "nd";
+					} else if(place%10 == 3){
+						victoryText.text = place + "rd";
+					}else{
+						victoryText.text = place + "th";
+					}
+				}
+			}
 		}
 	}
 }

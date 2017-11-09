@@ -6,6 +6,12 @@ TagManager:
   tags:
   - Player1
   - Player2
+  - Collectable
+  - Check1
+  - Check2
+  - Check3
+  - GameDriver
+  - FinishLine
   layers:
   - Default
   - TransparentFX
