@@ -16,6 +16,9 @@ public class PlayerController : MonoBehaviour {
 	public Text lapText;
 	public Text victoryText;
 
+	public float maxturn;
+	public float maxturndecrease;
+
 	[Header("Tilting")]
 	public float leanHorizontal;
 	public float maxAngleLeft;
@@ -33,6 +36,7 @@ public class PlayerController : MonoBehaviour {
 	private bool passedCheckPoint = false;
 
 	private Transform playerTransform;
+	private Vector3 rotateVector;
 	private Vector3 eulerRotation;
 	private Vector3 curRotation;
 	private int collectCount = 0;
@@ -79,14 +83,26 @@ public class PlayerController : MonoBehaviour {
 		}*/
 
 		//Debug.Log (curSpeed);
-		this.gameObject.transform.Rotate(new Vector3(0,leanHorizontal * Input.GetAxis("Horizontal"+playerNum),0));
-		this.GetComponent<Rigidbody>().velocity = Vector3.RotateTowards (this.GetComponent<Rigidbody> ().velocity, transform.forward, leanHorizontal * Time.deltaTime, 0.0f);
+		this.gameObject.transform.Rotate(new Vector3(0,(maxturn - (maxturndecrease * (this.GetComponent<Rigidbody>().velocity.magnitude/maxSpeed))) * Input.GetAxis("Horizontal"+playerNum) * Time.deltaTime,0));
+		if (transform.InverseTransformDirection(this.GetComponent<Rigidbody>().velocity).z >= 0) {
+			rotateVector = transform.forward;
+		} else {
+			rotateVector = transform.forward * -1;
+		}
+		this.GetComponent<Rigidbody>().velocity = Vector3.RotateTowards (this.GetComponent<Rigidbody> ().velocity, rotateVector, 360.0f, 0.0f);
 		//this.GetComponent<Rigidbody> ().AddTorque (transform.up * leanHorizontal * Input.GetAxis("Horizontal"+playerNum));
-		this.GetComponent<Rigidbody> ().AddForce (transform.forward * acceleration * Input.GetAxis("Vertical"+playerNum), ForceMode.Acceleration);
+		if (Input.GetAxis ("Vertical" + playerNum) != 0) {
+			this.GetComponent<Rigidbody> ().AddForce (transform.forward * acceleration * Input.GetAxis ("Vertical" + playerNum), ForceMode.Acceleration);
+		} else if (this.GetComponent<Rigidbody> ().velocity.magnitude != 0) {
+			this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * Mathf.Max (0, this.GetComponent<Rigidbody> ().velocity.magnitude - (deceleration * Time.deltaTime));
+			//this.GetComponent<Rigidbody> ().AddForce (rotateVector * -1 * deceleration, ForceMode.Acceleration);
+			//if(this.GetComponent<Rigidbody> ().velocity.magnitude
+		}
 		if (this.GetComponent<Rigidbody> ().velocity.magnitude > maxSpeed) {
 			this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * maxSpeed;
 			Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
 		}
+		Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
 		//this.GetComponent<Rigidbody> ().velocity = move * curSpeed;
 		//playerTransform.position += playerTransform.forward * curSpeed/4;
 		//this.gameObject.GetComponent<Rigidbody>().AddRelativeForce(new Vector3 (0, 0, acceleration * -Input.GetAxis ("Vertical")));
@@ -160,6 +176,7 @@ public class PlayerController : MonoBehaviour {
 						victoryText.text = place + "th";
 					}
 				}
+				passedCheckPoint = false;
 			}
 		}
 	}
