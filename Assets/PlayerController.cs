@@ -4,7 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
-	
+
+	public AudioSource AS;
+	public AudioClip GetPowerup;
+
 	[Header("Movement")]
 	public float acceleration;
 	public float maxSpeed;
@@ -147,6 +150,7 @@ public class PlayerController : MonoBehaviour {
 		string tag = other.gameObject.tag;
 		if (tag == "Collectable") {
 			if (!other.gameObject.GetComponent<MusicBall> ().IsCollected ()) {
+				AS.PlayOneShot (GetPowerup);
 				other.gameObject.GetComponent<MusicBall> ().SetCollected ();
 				GameObject.Destroy (other.gameObject);
 				collectCount += 1;
