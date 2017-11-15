@@ -91,8 +91,8 @@ public class PlayerController : MonoBehaviour {
 		}
 		this.GetComponent<Rigidbody>().velocity = Vector3.RotateTowards (this.GetComponent<Rigidbody> ().velocity, rotateVector, 360.0f, 0.0f);
 		//this.GetComponent<Rigidbody> ().AddTorque (transform.up * leanHorizontal * Input.GetAxis("Horizontal"+playerNum));
-		if (Input.GetAxis ("Vertical" + playerNum) != 0) {
-			this.GetComponent<Rigidbody> ().AddForce (transform.forward * acceleration * Input.GetAxis ("Vertical" + playerNum), ForceMode.Acceleration);
+		if (Input.GetAxis ("LeftY" + playerNum) != 0) {
+			this.GetComponent<Rigidbody> ().AddForce (transform.forward * acceleration * Input.GetAxis ("Foward" + playerNum) , ForceMode.Acceleration);
 		} else if (this.GetComponent<Rigidbody> ().velocity.magnitude != 0) {
 			this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * Mathf.Max (0, this.GetComponent<Rigidbody> ().velocity.magnitude - (deceleration * Time.deltaTime));
 			//this.GetComponent<Rigidbody> ().AddForce (rotateVector * -1 * deceleration, ForceMode.Acceleration);
@@ -102,6 +102,7 @@ public class PlayerController : MonoBehaviour {
 			this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * maxSpeed;
 			Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
 		}
+		this.GetComponent<Rigidbody> ().AddForce (transform.right * 100f * Input.GetAxis ("LeftX" + playerNum), ForceMode.Acceleration);
 		Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
 		//this.GetComponent<Rigidbody> ().velocity = move * curSpeed;
 		//playerTransform.position += playerTransform.forward * curSpeed/4;
