@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour {
 
 	public AudioSource AS;
 	public AudioClip GetPowerup;
+	public AudioClip Step;
+	public AudioClip Fast;
 
 	[Header("Movement")]
 	public float acceleration;
@@ -29,6 +31,8 @@ public class PlayerController : MonoBehaviour {
 	public float leanVertical;
 	public float maxAngleVertical;
 
+	public float StepTime;
+
 
 	private int curLap = 1;
 	private int laps = 3;
@@ -43,6 +47,8 @@ public class PlayerController : MonoBehaviour {
 	private Vector3 eulerRotation;
 	private Vector3 curRotation;
 	private int collectCount = 0;
+	private float curStepTime = 0f;
+	private float curMagnitude = 0f;
 
 	// Use this for initialization
 	void Start (){
@@ -51,6 +57,7 @@ public class PlayerController : MonoBehaviour {
 		victoryText.text = "";
 		curRotation = playerTransform.rotation.eulerAngles;
 	}
+
 	
 	// Update is called once per frame
 	void Update () {
@@ -102,12 +109,32 @@ public class PlayerController : MonoBehaviour {
 			//if(this.GetComponent<Rigidbody> ().velocity.magnitude
 		}
 		if (this.GetComponent<Rigidbody> ().velocity.magnitude > maxSpeed) {
+			//AS.PlayOneShot (Fast);
 			this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * maxSpeed;
 			Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
+		} else {
+			//AS.PlayOneShot (Step);
 		}
 		transform.Translate(transform.right * Input.GetAxis ("LeftX" + playerNum) * Time.deltaTime * 2, Space.World);
 		//this.GetComponent<Rigidbody> ().AddForce (transform.right * 100f * Input.GetAxis ("LeftX" + playerNum), ForceMode.Acceleration);
 		Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
+
+		curMagnitude = this.GetComponent<Rigidbody> ().velocity.magnitude;
+		if (curMagnitude > 0.01) {
+			curStepTime += Time.deltaTime;
+			if (curStepTime >= StepTime) {
+				if (curMagnitude < maxSpeed) {
+					AS.PlayOneShot (Step);
+				} else {
+					AS.PlayOneShot (Fast);
+				}
+				curStepTime = 0f;
+			}
+		} else  {
+			curStepTime = 0f;
+		}
+
+
 		//this.GetComponent<Rigidbody> ().velocity = move * curSpeed;
 		//playerTransform.position += playerTransform.forward * curSpeed/4;
 		//this.gameObject.GetComponent<Rigidbody>().AddRelativeForce(new Vector3 (0, 0, acceleration * -Input.GetAxis ("Vertical")));
