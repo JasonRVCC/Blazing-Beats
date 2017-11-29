@@ -48,11 +48,11 @@ public class PlayerController : MonoBehaviour {
 
 	private GameDriver gameDriver;
 
-	private bool passedCheckPoint = false;
+	//private bool passedCheckPoint = false;
 
 	private int wayPointNum = 0;
 
-
+	private GameObject otherPlayer;
 
 	private Transform playerTransform;
 	private Vector3 rotateVector;
@@ -64,16 +64,34 @@ public class PlayerController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start (){
+		place = playerNum;
 		gameDriver = GameObject.FindGameObjectWithTag ("GameDriver").GetComponent<GameDriver> ();
+		if (playerNum == 1) {
+			otherPlayer = GameObject.FindGameObjectWithTag ("Player2");
+		} else {
+			otherPlayer = GameObject.FindGameObjectWithTag ("Player1");
+		}
 		playerTransform = this.transform;
 		victoryText.text = "";
 		curRotation = playerTransform.rotation.eulerAngles;
 		plCamera.SetViewPort ((playerNum - 1) * 0.5f, 0f, 0.5f, 1.0f);
 	}
 
+	public int CurrentLap{
+		get{return curLap;}
+	}
+
+	public int WayPointNumber{
+		get{return wayPointNum;}
+	}
+
 	
 	// Update is called once per frame
 	void Update () {
+		SetPlace ();
+		if (playerNum == 1) {
+			Debug.Log (place);
+		}
 		collectText.text = "Orbs" + collectCount;
 		lapText.text = "Lap: " + curLap + "/" + laps;
 
@@ -124,13 +142,13 @@ public class PlayerController : MonoBehaviour {
 		if (this.GetComponent<Rigidbody> ().velocity.magnitude > maxSpeed) {
 			//AS.PlayOneShot (Fast);
 			this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * maxSpeed;
-			Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
+			//Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
 		} else {
 			//AS.PlayOneShot (Step);
 		}
 		transform.Translate(transform.right * Input.GetAxis ("LeftX" + playerNum) * Time.deltaTime * 2, Space.World);
 		//this.GetComponent<Rigidbody> ().AddForce (transform.right * 100f * Input.GetAxis ("LeftX" + playerNum), ForceMode.Acceleration);
-		Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
+		//Debug.Log (this.GetComponent<Rigidbody> ().velocity.magnitude);
 
 		curMagnitude = this.GetComponent<Rigidbody> ().velocity.magnitude;
 		if (curMagnitude > 0.01) {
@@ -186,8 +204,21 @@ public class PlayerController : MonoBehaviour {
 		*/
 	}
 
-	public void ComparePlace(){
-		
+	public void SetPlace(){
+		if (curLap > otherPlayer.GetComponent<PlayerController> ().CurrentLap) {
+			place = 1;
+		} else if (curLap < otherPlayer.GetComponent<PlayerController> ().CurrentLap) {
+			place = 2;
+		} else if (wayPointNum > otherPlayer.GetComponent<PlayerController> ().WayPointNumber) {
+			place = 1;
+		} else if (wayPointNum < otherPlayer.GetComponent<PlayerController> ().WayPointNumber) {
+			place = 2;
+		} else if(gameDriver.AheadOfOtherPlayer(wayPointNum,this.transform.position,otherPlayer.transform.position)){
+			place = 1;
+		} else {
+			place = 2;
+		}
+
 	}
 
 
@@ -213,20 +244,14 @@ public class PlayerController : MonoBehaviour {
 		if (tag == "Waypoint") {
 			int prevWay = wayPointNum;
 			wayPointNum = other.gameObject.GetComponent<Waypoint> ().wayNumber;
-			if (prevWay == 7 && wayPointNum == 0) {
+			if (prevWay == 8 && wayPointNum == 0) {
 				if (curLap < laps) {
 					curLap += 1;
 				} else if (curLap == laps) {
-					place = gameDriver.Finish (playerNum);
-					if (place%10 == 1) {
-						victoryText.text = place + "st";
-					}
-					else if (place % 10 == 2) {
-						victoryText.text = place + "nd";
-					} else if(place%10 == 3){
-						victoryText.text = place + "rd";
-					}else{
-						victoryText.text = place + "th";
+					if (place == 1) {
+						victoryText.text = "You Win!";
+					} else {
+						victoryText.text = "You Lose!";
 					}
 				}
 			}
@@ -251,6 +276,6 @@ public class PlayerController : MonoBehaviour {
 				}
 				passedCheckPoint = false;
 			}
-		}*/
+		} */
 	}
 }

@@ -595,7 +595,7 @@ MonoBehaviour:
   GetPowerup: {fileID: 8300000, guid: 525407b2eddb9ae4a988fec2a414ce88, type: 3}
   Step: {fileID: 8300000, guid: 6197b8a8bd71a92478deab378be43491, type: 3}
   Fast: {fileID: 8300000, guid: b816129aacc4a6d4690d2118b6d8d4a2, type: 3}
-  plCamera: {fileID: 0}
+  plCamera: {fileID: 114370729717997800}
   acceleration: 10
   maxSpeed: 25
   deceleration: 5
@@ -603,6 +603,8 @@ MonoBehaviour:
   collectText: {fileID: 114890072746257650}
   lapText: {fileID: 114632991751706524}
   victoryText: {fileID: 114249246807666254}
+  powerUp1: {fileID: 114762928278430480}
+  SpeedBoost: {fileID: 21300000, guid: 6d921b384eb02ac4eb5df224ef81d030, type: 3}
   maxturn: 80
   maxturndecrease: 20
   leanHorizontal: 80

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CompareAxis{X,Y,Z};
+public enum CompareAxis{X,NegX,Y,NegY,Z,NegZ};
 
 public class GameDriver : MonoBehaviour {
 
@@ -31,7 +31,48 @@ public class GameDriver : MonoBehaviour {
 		
 	}
 
-	//public bool AheadOfOtherPlayer
+	public bool AheadOfOtherPlayer(int compareMethod, Vector3 fp, Vector3 sp){
+		switch (wayCompares[compareMethod]) {
+			case CompareAxis.X:
+				if (fp.x > sp.x) {
+					return true;
+				} else {
+					return false;
+				}
+			case CompareAxis.NegX:
+				if (fp.x < sp.x) {
+					return true;
+				} else {
+					return false;
+				}
+			case CompareAxis.Y:
+				if (fp.y > sp.y) {
+					return true;
+				} else {
+					return false;
+				}
+			case CompareAxis.NegY:
+				if (fp.y < sp.y) {
+					return true;
+				} else {
+					return false;
+				}
+			case CompareAxis.Z:
+				if (fp.z > sp.z) {
+					return true;
+				} else {
+					return false;
+				}
+			case CompareAxis.NegZ:
+				if (fp.z < sp.z) {
+					return true;
+				} else {
+					return false;
+				}
+		}
+		Debug.LogError ("Waypoint Comparison " + compareMethod + " not set.");
+		return false;
+	}
 
 	public int Finish(int playerNum){
 		for (int i = 0; i < placement.Length; i++) {
