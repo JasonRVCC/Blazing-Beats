@@ -18,4 +18,9 @@ public class PlayerCamera : MonoBehaviour {
 	void Update () {
 		this.transform.position.Set (target.position.x - xDistance, target.position.y - yDistance, target.position.z - zDistance);
 	}
+
+	public void SetViewPort(float x, float y, float w, float h){
+		this.GetComponent<Camera> ().rect = new Rect (x, y, w, h);
+	}
+
 }

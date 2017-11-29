@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour {
 	public AudioClip Step;
 	public AudioClip Fast;
 
+	public PlayerCamera plCamera;
+
 	[Header("Movement")]
 	public float acceleration;
 	public float maxSpeed;
@@ -17,9 +19,15 @@ public class PlayerController : MonoBehaviour {
 	[Space(10)]
 
 	public int playerNum;
+
+	[Header("UI")]
 	public Text collectText;
 	public Text lapText;
 	public Text victoryText;
+	public Image powerUp1;
+
+	[Header("Spites")]
+	public Sprite SpeedBoost;
 
 	public float maxturn;
 	public float maxturndecrease;
@@ -42,6 +50,10 @@ public class PlayerController : MonoBehaviour {
 
 	private bool passedCheckPoint = false;
 
+	private int wayPointNum = 0;
+
+
+
 	private Transform playerTransform;
 	private Vector3 rotateVector;
 	private Vector3 eulerRotation;
@@ -56,6 +68,7 @@ public class PlayerController : MonoBehaviour {
 		playerTransform = this.transform;
 		victoryText.text = "";
 		curRotation = playerTransform.rotation.eulerAngles;
+		plCamera.SetViewPort ((playerNum - 1) * 0.5f, 0f, 0.5f, 1.0f);
 	}
 
 	
@@ -173,6 +186,11 @@ public class PlayerController : MonoBehaviour {
 		*/
 	}
 
+	public void ComparePlace(){
+		
+	}
+
+
 	void OnTriggerEnter(Collider other){
 		Debug.Log ("hit");
 		string tag = other.gameObject.tag;
@@ -183,7 +201,7 @@ public class PlayerController : MonoBehaviour {
 				GameObject.Destroy (other.gameObject);
 				collectCount += 1;
 			}
-		}
+		}/*
 		if(tag == "Check1"){
 			if(passedCheckPoint){
 				passedCheckPoint = false;
@@ -191,7 +209,29 @@ public class PlayerController : MonoBehaviour {
 			else if(!passedCheckPoint){
 				passedCheckPoint = true;
 			}
+		}*/
+		if (tag == "Waypoint") {
+			int prevWay = wayPointNum;
+			wayPointNum = other.gameObject.GetComponent<Waypoint> ().wayNumber;
+			if (prevWay == 7 && wayPointNum == 0) {
+				if (curLap < laps) {
+					curLap += 1;
+				} else if (curLap == laps) {
+					place = gameDriver.Finish (playerNum);
+					if (place%10 == 1) {
+						victoryText.text = place + "st";
+					}
+					else if (place % 10 == 2) {
+						victoryText.text = place + "nd";
+					} else if(place%10 == 3){
+						victoryText.text = place + "rd";
+					}else{
+						victoryText.text = place + "th";
+					}
+				}
+			}
 		}
+		/*
 		if (tag == "FinishLine") {
 			if (passedCheckPoint) {
 				if (curLap < laps) {
@@ -211,6 +251,6 @@ public class PlayerController : MonoBehaviour {
 				}
 				passedCheckPoint = false;
 			}
-		}
+		}*/
 	}
 }
