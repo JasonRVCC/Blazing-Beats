@@ -12,6 +12,7 @@ TagManager:
   - Check3
   - GameDriver
   - FinishLine
+  - Waypoint
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - 
   - p1
   - p2
-  - 
+  - waypoint
   - 
   - 
   - 

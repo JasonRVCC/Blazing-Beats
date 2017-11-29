@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour {
 	public AudioClip Step;
 	public AudioClip Fast;
 
+	public PlayerCamera plCamera;
+
 	[Header("Movement")]
 	public float acceleration;
 	public float maxSpeed;
@@ -17,9 +19,15 @@ public class PlayerController : MonoBehaviour {
 	[Space(10)]
 
 	public int playerNum;
+
+	[Header("UI")]
 	public Text collectText;
 	public Text lapText;
 	public Text victoryText;
+	public Image powerUp1;
+
+	[Header("Spites")]
+	public Sprite SpeedBoost;
 
 	public float maxturn;
 	public float maxturndecrease;
@@ -56,6 +64,7 @@ public class PlayerController : MonoBehaviour {
 		playerTransform = this.transform;
 		victoryText.text = "";
 		curRotation = playerTransform.rotation.eulerAngles;
+		plCamera.SetViewPort ((playerNum - 1) * 0.5f, 0f, 0.5f, 1.0f);
 	}
 
 	
