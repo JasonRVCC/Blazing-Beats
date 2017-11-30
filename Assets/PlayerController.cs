@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour {
 	public Image powerUp1;
 
 	[Header("Spites")]
-	public Sprite SpeedBoost;
+	public Sprite BoostSprite;
 
 	public float maxturn;
 	public float maxturndecrease;
@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour {
 
 
 	private float maxMag;
-	private float boostTimer = 0;
+	private float boostTimer = 0f;
 	private Transform playerTransform;
 	private Vector3 rotateVector;
 	private Vector3 eulerRotation;
@@ -72,6 +72,7 @@ public class PlayerController : MonoBehaviour {
 	private int collectCount = 0;
 	private float curStepTime = 0f;
 	private float curMagnitude = 0f;
+	private bool BoostButtonDown = false;
 
 	// Use this for initialization
 	void Start (){
@@ -101,12 +102,26 @@ public class PlayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		SetPlace ();
-		if (playerNum == 1) {
-			Debug.Log (place);
+		UpdatePowerUI ();
+
+
+		if(Input.GetAxis("Boost" + playerNum) > 0 && collectCount >= BoostCost && !BoostButtonDown){
+			Debug.Log ("BOOOST");
+			BoostButtonDown = true;
+			collectCount -= BoostCost;
+			Boost ();
+		}
+		if (Input.GetAxis ("Boost" + playerNum) == 0) {
+			BoostButtonDown = false;
 		}
 
-		if(Input.GetAxis("Boost"+playerNum) != 0 && collectCount >= BoostCost && boostTimer == 0){
-			Boost ();
+		if (boostTimer != 0) {
+			boostTimer = Mathf.Max(0,boostTimer - Time.deltaTime);
+			if (boostTimer == 0) {
+				maxSpeed = maxMag;
+			} else {
+				maxSpeed = maxMag + (BoostSpeed * (boostTimer / BoostSlowdown));
+			}
 		}
 
 		collectText.text = "Orbs" + collectCount;
@@ -243,15 +258,21 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void UpdatePowerUI(){
-		if (collectCount >= BoostCost && boostTimer == 0) {
-			powerUp1.color = new Color (255f, 255f, 255f, 255f);
+		if (collectCount >= BoostCost) {
+			powerUp1.color = new Color (255f, 255f, 255f, 1f);
 		} else {
-			powerUp1.color = new Color (255f, 255f, 255f, 115f);;
+			powerUp1.color = new Color (255f, 255f, 255f,0.5f);;
 		}
 	}
 
 	public void Boost(){
-		
+		maxSpeed += BoostSpeed;
+		if (this.GetComponent<Rigidbody> ().velocity.magnitude < 0.01 && this.GetComponent<Rigidbody> ().velocity.magnitude > -0.01) {
+			Debug.Log ("ADDDDDD");
+			this.GetComponent<Rigidbody> ().AddForce (transform.forward * 2000, ForceMode.Acceleration);
+		}
+		this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * maxSpeed;
+		boostTimer = BoostSlowdown;
 	}
 
 
@@ -280,7 +301,8 @@ public class PlayerController : MonoBehaviour {
 				if (curLap < laps) {
 					curLap += 1;
 				} else if (curLap == laps) {
-					if (place == 1) {
+					int finishPlace = gameDriver.Finish (playerNum);
+					if (finishPlace == 1) {
 						victoryText.text = "You Win!";
 					} else {
 						victoryText.text = "You Lose!";
