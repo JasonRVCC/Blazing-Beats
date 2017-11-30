@@ -9,6 +9,9 @@ public class GameDriver : MonoBehaviour {
 	public int numberOfPlayers;
 	public int wayPoints;
 
+	public AudioSource BGM;
+	public AudioSource Ambeince;
+
 	[Header("Waypoint Comparison")]
 	public CompareAxis[] wayCompares;
 
@@ -23,6 +26,10 @@ public class GameDriver : MonoBehaviour {
 		if (wayCompares.Length != wayPoints) {
 			Debug.LogError ("WARNING: array wayCompares is not equal to the number of way points in the level.");
 		}
+		BGM.time = 48.0f;
+		BGM.Play ();
+		Ambeince.Play ();
+
 
 	}
 	

@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotation: {x: 0, y: 1, z: 0}
+  respawnTime: 45
 --- !u!135 &135480292648682390
 SphereCollider:
   m_ObjectHideFlags: 1

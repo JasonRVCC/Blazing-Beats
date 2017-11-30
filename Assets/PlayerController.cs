@@ -5,10 +5,7 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
-	public AudioSource AS;
-	public AudioClip GetPowerup;
-	public AudioClip Step;
-	public AudioClip Fast;
+
 
 	public PlayerCamera plCamera;
 
@@ -17,6 +14,11 @@ public class PlayerController : MonoBehaviour {
 	public float maxSpeed;
 	public float deceleration;
 	[Space(10)]
+
+	[Header("Power Ups")]
+	public int BoostCost;
+	public float BoostSpeed;
+	public float BoostSlowdown;
 
 	public int playerNum;
 
@@ -39,6 +41,11 @@ public class PlayerController : MonoBehaviour {
 	public float leanVertical;
 	public float maxAngleVertical;
 
+	[Header("Audio")]
+	public AudioSource Step;
+	public AudioSource GetPowerup;
+
+	public float pitch;
 	public float StepTime;
 
 
@@ -51,9 +58,13 @@ public class PlayerController : MonoBehaviour {
 	//private bool passedCheckPoint = false;
 
 	private int wayPointNum = 0;
+	private bool secondStep = false;
 
 	private GameObject otherPlayer;
 
+
+	private float maxMag;
+	private float boostTimer = 0;
 	private Transform playerTransform;
 	private Vector3 rotateVector;
 	private Vector3 eulerRotation;
@@ -64,6 +75,7 @@ public class PlayerController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start (){
+		maxMag = maxSpeed;
 		place = playerNum;
 		gameDriver = GameObject.FindGameObjectWithTag ("GameDriver").GetComponent<GameDriver> ();
 		if (playerNum == 1) {
@@ -92,6 +104,11 @@ public class PlayerController : MonoBehaviour {
 		if (playerNum == 1) {
 			Debug.Log (place);
 		}
+
+		if(Input.GetAxis("Boost"+playerNum) != 0 && collectCount >= BoostCost && boostTimer == 0){
+			Boost ();
+		}
+
 		collectText.text = "Orbs" + collectCount;
 		lapText.text = "Lap: " + curLap + "/" + laps;
 
@@ -154,10 +171,14 @@ public class PlayerController : MonoBehaviour {
 		if (curMagnitude > 0.01) {
 			curStepTime += Time.deltaTime;
 			if (curStepTime >= StepTime) {
-				if (curMagnitude < maxSpeed) {
-					AS.PlayOneShot (Step);
+				Step.Play ();
+				Step.pitch = pitch + curMagnitude / maxSpeed;
+				if (secondStep) {
+					Step.pitch += 0.25f;
+					secondStep = false;
 				} else {
-					AS.PlayOneShot (Fast);
+					Step.pitch -= 0.25f;
+					secondStep = true;
 				}
 				curStepTime = 0f;
 			}
@@ -221,15 +242,26 @@ public class PlayerController : MonoBehaviour {
 
 	}
 
+	public void UpdatePowerUI(){
+		if (collectCount >= BoostCost && boostTimer == 0) {
+			powerUp1.color = new Color (255f, 255f, 255f, 255f);
+		} else {
+			powerUp1.color = new Color (255f, 255f, 255f, 115f);;
+		}
+	}
+
+	public void Boost(){
+		
+	}
+
 
 	void OnTriggerEnter(Collider other){
 		Debug.Log ("hit");
 		string tag = other.gameObject.tag;
 		if (tag == "Collectable") {
 			if (!other.gameObject.GetComponent<MusicBall> ().IsCollected ()) {
-				AS.PlayOneShot (GetPowerup);
+				GetPowerup.Play();
 				other.gameObject.GetComponent<MusicBall> ().SetCollected ();
-				GameObject.Destroy (other.gameObject);
 				collectCount += 1;
 			}
 		}/*
