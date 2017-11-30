@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviour {
 		UpdatePowerUI ();
 
 
-		if(Input.GetAxis("Boost" + playerNum) > 0 && collectCount >= BoostCost && !BoostButtonDown){
+		if(Input.GetAxis("Boost" + playerNum) != 0 && collectCount >= BoostCost && !BoostButtonDown){
 			Debug.Log ("BOOOST");
 			BoostButtonDown = true;
 			collectCount -= BoostCost;
