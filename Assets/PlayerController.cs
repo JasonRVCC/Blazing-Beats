@@ -8,31 +8,61 @@ public class PlayerController : MonoBehaviour {
 
 
 	public PlayerCamera plCamera;
+	public int playerNum;
 
 	[Header("Movement")]
 	public float acceleration;
 	public float maxSpeed;
 	public float deceleration;
-	[Space(10)]
+	public float maxturn;
+	public float maxturndecrease;
+	[Space(8)]
 
 	[Header("Power Ups")]
+	[Header("Boost")]
 	public int BoostCost;
 	public float BoostSpeed;
 	public float BoostSlowdown;
-
-	public int playerNum;
+	[Space(4)]
+	[Header("Double Orb")]
+	public int DoubleCost;
+	public float DoubleTime;
+	[Space(4)]
+	[Header("Tuba")]
+	public int TubaCost;
+	public float TubaKnockback;
+	[Space(4)]
+	[Header("Invincibility")]
+	public int InvincibleCost;
+	public float InvincibleTime;
+	[Space(4)]
+	[Header("Jazz")]
+	public int JazzCost;
+	public float JazzDecrease;
+	public int JazzTime;
+	[Space(4)]
 
 	[Header("UI")]
 	public Text collectText;
 	public Text lapText;
 	public Text victoryText;
 	public Image powerUp1;
+	public Image powerUp2;
+	public Image powerUp3;
+	public Text powerCost1;
+	public Text powerCost2;
+	public Text powerCost3;
+	[Space(8)]
+
 
 	[Header("Spites")]
 	public Sprite BoostSprite;
+	public Sprite DoubleOrbSprite;
+	public Sprite TubaSprite;
+	public Sprite InvincibilitySprite;
+	public Sprite JazzSprite;
+	[Space(8)]
 
-	public float maxturn;
-	public float maxturndecrease;
 
 	[Header("Tilting")]
 	public float leanHorizontal;
@@ -40,39 +70,57 @@ public class PlayerController : MonoBehaviour {
 	public float maxAngleRight;
 	public float leanVertical;
 	public float maxAngleVertical;
+	[Space(8)]
 
 	[Header("Audio")]
 	public AudioSource Step;
 	public AudioSource GetPowerup;
-
 	public float pitch;
 	public float StepTime;
+	[Space(8)]
 
+	//reference to Game Driver and other player----------
+	private GameDriver gameDriver;
+	private GameObject otherPlayer;
 
+	//Lap and Placement variables------------------------
 	private int curLap = 1;
 	private int laps = 3;
 	private int place = 0;
-
-	private GameDriver gameDriver;
-
-	//private bool passedCheckPoint = false;
-
 	private int wayPointNum = 0;
+
+	//Audio variables------------------------------------
 	private bool secondStep = false;
+	private float curStepTime = 0f;
 
-	private GameObject otherPlayer;
-
-
+	//Movement variables---------------------------------
 	private float maxMag;
-	private float boostTimer = 0f;
 	private Transform playerTransform;
 	private Vector3 rotateVector;
 	private Vector3 eulerRotation;
 	private Vector3 curRotation;
 	private int collectCount = 0;
-	private float curStepTime = 0f;
 	private float curMagnitude = 0f;
+
+	//Power up variables-------------------------------
+	//Boost--------------------------------------------
+	private float boostTimer = 0f;
 	private bool BoostButtonDown = false;
+	//PowerUp 3--------------------------------------
+	private bool PowerUp2ButtonDown = false;
+	//Double Orb--------------------------------------
+	private float doubleOrbTimer = 0f;
+	private bool isDoubleOn = false;
+	//Invincibility------------------------------------
+	private float invincibleTimer= 0f;
+	private bool isInvincible = false;
+	//PowerUp 3--------------------------------------
+	private bool PowerUp3ButtonDown = false;
+	//Tuba------------------------------------------
+	//Jazz--------------------------------------------
+	private float jazzTimer = 0f;
+
+
 
 	// Use this for initialization
 	void Start (){
@@ -88,6 +136,11 @@ public class PlayerController : MonoBehaviour {
 		victoryText.text = "";
 		curRotation = playerTransform.rotation.eulerAngles;
 		plCamera.SetViewPort ((playerNum - 1) * 0.5f, 0f, 0.5f, 1.0f);
+		powerCost1.text = BoostCost.ToString ();
+
+		//Temp Code for visual effect
+		this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+		//
 	}
 
 	public int CurrentLap{
@@ -104,23 +157,57 @@ public class PlayerController : MonoBehaviour {
 		SetPlace ();
 		UpdatePowerUI ();
 
-
-		if(Input.GetAxis("Boost" + playerNum) != 0 && collectCount >= BoostCost && !BoostButtonDown){
-			Debug.Log ("BOOOST");
-			BoostButtonDown = true;
-			collectCount -= BoostCost;
-			Boost ();
-		}
+		//check if inputs are released
 		if (Input.GetAxis ("Boost" + playerNum) == 0) {
 			BoostButtonDown = false;
 		}
+		if (Input.GetAxis ("Power2" + playerNum) == 0) {
+			PowerUp2ButtonDown = false;
+		}
+		if (Input.GetAxis ("Power3" + playerNum) == 0) {
+			PowerUp3ButtonDown = false;
+		}
+			
+		//Check boost input
+		if(Input.GetAxis("Boost" + playerNum) != 0 && collectCount >= BoostCost && !BoostButtonDown){
+			Debug.Log ("BOOOST");
+			BoostButtonDown = true;
+			Boost ();
+		}
+		//Check Power 2 input
+		if(Input.GetAxis("Power2" + playerNum) != 0 && !PowerUp2ButtonDown){
+			if (place == 1) {
+				Debug.Log ("Invincible");
+				PowerUp2ButtonDown = true;
+				TurnInvincible ();
+			} else {
+				Debug.Log ("Double Orb");
+				PowerUp2ButtonDown = true;
+				DoubleOrb();
+			}
+		}
 
+		//Count down timers
 		if (boostTimer != 0) {
 			boostTimer = Mathf.Max(0,boostTimer - Time.deltaTime);
 			if (boostTimer == 0) {
 				maxSpeed = maxMag;
 			} else {
 				maxSpeed = maxMag + (BoostSpeed * (boostTimer / BoostSlowdown));
+			}
+		}
+		if (isDoubleOn) {
+			doubleOrbTimer = Mathf.Max(0,doubleOrbTimer - Time.deltaTime);
+			if (doubleOrbTimer == 0) {
+				isDoubleOn = false;
+				this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+			}
+		}
+		if (isInvincible) {
+			invincibleTimer = Mathf.Max(0,invincibleTimer - Time.deltaTime);
+			if (invincibleTimer == 0) {
+				isInvincible = false;
+				this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
 			}
 		}
 
@@ -258,14 +345,48 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void UpdatePowerUI(){
+		//Set boost UI
 		if (collectCount >= BoostCost) {
 			powerUp1.color = new Color (255f, 255f, 255f, 1f);
 		} else {
 			powerUp1.color = new Color (255f, 255f, 255f,0.5f);;
 		}
+		//Set Power Up 2 and 3 UI
+		if (place == 1) {
+			powerUp2.sprite = InvincibilitySprite;
+			powerCost2.text = InvincibleCost.ToString ();
+			if (collectCount >= InvincibleCost && !isInvincible) {
+				powerUp2.color = new Color (255f, 255f, 255f, 1f);
+			} else {
+				powerUp2.color = new Color (255f, 255f, 255f,0.5f);;
+			}
+			powerUp3.sprite = JazzSprite;
+			powerCost3.text = JazzCost.ToString ();
+			if (collectCount >= JazzCost) {
+				powerUp3.color = new Color (255f, 255f, 255f, 1f);
+			} else {
+				powerUp3.color = new Color (255f, 255f, 255f,0.5f);;
+			}
+		} else {
+			powerUp2.sprite = DoubleOrbSprite;
+			powerCost2.text = DoubleCost.ToString ();
+			if (collectCount >= DoubleCost && !isDoubleOn) {
+				powerUp2.color = new Color (255f, 255f, 255f, 1f);
+			} else {
+				powerUp2.color = new Color (255f, 255f, 255f,0.5f);;
+			}
+			powerUp3.sprite = TubaSprite;
+			powerCost3.text = TubaCost.ToString ();
+			if (collectCount >= TubaCost) {
+				powerUp3.color = new Color (255f, 255f, 255f, 1f);
+			} else {
+				powerUp3.color = new Color (255f, 255f, 255f,0.5f);;
+			}
+		}
 	}
 
 	public void Boost(){
+		collectCount -= BoostCost;
 		maxSpeed += BoostSpeed;
 		if (this.GetComponent<Rigidbody> ().velocity.magnitude < 0.01 && this.GetComponent<Rigidbody> ().velocity.magnitude > -0.01) {
 			Debug.Log ("ADDDDDD");
@@ -273,6 +394,24 @@ public class PlayerController : MonoBehaviour {
 		}
 		this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * maxSpeed;
 		boostTimer = BoostSlowdown;
+	}
+
+	public void DoubleOrb(){
+		collectCount -= DoubleCost;
+		isDoubleOn = true;
+		doubleOrbTimer = DoubleTime;
+		//Temp Code for visual effect
+		this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+		//
+	}
+
+	public void TurnInvincible(){
+		collectCount -= InvincibleCost;
+		isInvincible = true;
+		invincibleTimer = InvincibleTime;
+		//Temp Code for visual effect
+		this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
+		//
 	}
 
 
@@ -283,7 +422,11 @@ public class PlayerController : MonoBehaviour {
 			if (!other.gameObject.GetComponent<MusicBall> ().IsCollected ()) {
 				GetPowerup.Play();
 				other.gameObject.GetComponent<MusicBall> ().SetCollected ();
-				collectCount += 1;
+				if (isDoubleOn) {
+					collectCount += 2;
+				} else {
+					collectCount += 1;
+				}
 			}
 		}/*
 		if(tag == "Check1"){
