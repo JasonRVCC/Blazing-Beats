@@ -11,9 +11,19 @@ public class GameDriver : MonoBehaviour {
 
 	public AudioSource BGM;
 	public AudioSource Ambeince;
+	public AudioSource TubaSound;
+	public AudioSource JazzSound;
+
+	[Header("Power Up Prefabs")]
+	public GameObject TubaPrefab;
+	public float TubaSpawnDistance;
+	public GameObject JazzPrefab;
+	[Space(8)]
 
 	[Header("Waypoint Comparison")]
 	public CompareAxis[] wayCompares;
+
+
 
 	private int[] placement;
 
@@ -35,8 +45,30 @@ public class GameDriver : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if (TubaSound.isPlaying && TubaSound.time >= 2) {
+			TubaSound.Stop ();
+		}
 	}
+
+	public void SpawnTuba(GameObject player, float tubaTime){
+		Vector3 spawnPos = player.transform.position + player.transform.forward * TubaSpawnDistance;
+		spawnPos.y += 1.6f;
+		GameObject tuba = (GameObject)Instantiate (TubaPrefab, spawnPos, player.transform.rotation);
+		tuba.GetComponent<TubaControl>().StartDeath (tubaTime);
+		TubaSound.Play ();
+	}
+
+	public void SpawnJazzTrap(GameObject player, int playerNum, float jazzTime){
+		GameObject jazz = (GameObject)Instantiate (JazzPrefab, player.transform.position, player.transform.rotation);
+		jazz.GetComponent<JazzControl> ().playerNum = playerNum;
+		jazz.GetComponent<JazzControl> ().jazzTime = jazzTime;
+		if (player.GetComponent<PlayerController> ().playerNum == 1) {
+			jazz.GetComponent<Renderer> ().material.SetColor ("_Color", new Color (255, 0, 0, 0.47f));
+		} else {
+			jazz.GetComponent<Renderer> ().material.SetColor ("_Color", new Color (0, 255, 0, 0.47f));
+		}
+	}
+
 
 	public bool AheadOfOtherPlayer(int compareMethod, Vector3 fp, Vector3 sp){
 		switch (wayCompares[compareMethod]) {

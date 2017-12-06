@@ -30,7 +30,8 @@ public class PlayerController : MonoBehaviour {
 	[Space(4)]
 	[Header("Tuba")]
 	public int TubaCost;
-	public float TubaKnockback;
+	public float TubaRotateSpeed;
+	public float TubaTime;
 	[Space(4)]
 	[Header("Invincibility")]
 	public int InvincibleCost;
@@ -74,7 +75,10 @@ public class PlayerController : MonoBehaviour {
 
 	[Header("Audio")]
 	public AudioSource Step;
-	public AudioSource GetPowerup;
+	public AudioSource BoostSound;
+	public AudioSource GetPowerUp;
+	public AudioSource PowerUpSound;
+	public AudioSource LapSound;
 	public float pitch;
 	public float StepTime;
 	[Space(8)]
@@ -117,7 +121,10 @@ public class PlayerController : MonoBehaviour {
 	//PowerUp 3--------------------------------------
 	private bool PowerUp3ButtonDown = false;
 	//Tuba------------------------------------------
+	private bool isTubaHit = false;
+	private float tubaTimer = 0f;
 	//Jazz--------------------------------------------
+	private bool isJazzed = false;
 	private float jazzTimer = 0f;
 
 
@@ -176,14 +183,28 @@ public class PlayerController : MonoBehaviour {
 		}
 		//Check Power 2 input
 		if(Input.GetAxis("Power2" + playerNum) != 0 && !PowerUp2ButtonDown){
-			if (place == 1) {
+			if (place == 1 && collectCount >= InvincibleCost) {
 				Debug.Log ("Invincible");
 				PowerUp2ButtonDown = true;
 				TurnInvincible ();
-			} else {
+			} else if(place !=1 && collectCount >= DoubleCost) {
 				Debug.Log ("Double Orb");
 				PowerUp2ButtonDown = true;
 				DoubleOrb();
+			}
+		}
+		//Check Power 3 input
+		if(Input.GetAxis("Power3" + playerNum) != 0 && !PowerUp3ButtonDown){
+			if (place == 1 && collectCount >= JazzCost) {
+				Debug.Log ("JAZZY");
+				PowerUp3ButtonDown = true;
+				SetJazzTrap ();
+			} else if(place != 1 && collectCount >= TubaCost) {
+				Debug.Log ("GET TUBA'D");
+				collectCount -= TubaCost;
+				PowerUp3ButtonDown = true;
+				gameDriver.SpawnTuba (otherPlayer, tubaTimer + 0.5f);
+				otherPlayer.GetComponent<PlayerController> ().TubaHit (TubaRotateSpeed, TubaTime);
 			}
 		}
 
@@ -210,9 +231,29 @@ public class PlayerController : MonoBehaviour {
 				this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
 			}
 		}
+		if (isJazzed) {
+			jazzTimer = Mathf.Max(0,jazzTimer - Time.deltaTime);
+			if (jazzTimer == 0) {
+				isJazzed = false;
+				maxMag += JazzDecrease;
+				maxSpeed += JazzDecrease;
+				this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+			}
+		}
+
+		//Tuba'd
+		if (isTubaHit) {
+			tubaTimer = Mathf.Max(0,tubaTimer - Time.deltaTime);
+			if (tubaTimer == 0) {
+				isTubaHit = false;
+			} else {
+				transform.Rotate (0, TubaRotateSpeed * Time.deltaTime, 0);
+			}
+		}
 
 		collectText.text = "Orbs" + collectCount;
 		lapText.text = "Lap: " + curLap + "/" + laps;
+
 
 		//Player Movement
 		//Vector3 move = playerTransform.rotation * Vector3.forward;
@@ -391,6 +432,7 @@ public class PlayerController : MonoBehaviour {
 		if (this.GetComponent<Rigidbody> ().velocity.magnitude < 0.01 && this.GetComponent<Rigidbody> ().velocity.magnitude > -0.01) {
 			Debug.Log ("ADDDDDD");
 			this.GetComponent<Rigidbody> ().AddForce (transform.forward * 2000, ForceMode.Acceleration);
+			BoostSound.Play ();
 		}
 		this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * maxSpeed;
 		boostTimer = BoostSlowdown;
@@ -399,6 +441,7 @@ public class PlayerController : MonoBehaviour {
 	public void DoubleOrb(){
 		collectCount -= DoubleCost;
 		isDoubleOn = true;
+		PowerUpSound.Play ();
 		doubleOrbTimer = DoubleTime;
 		//Temp Code for visual effect
 		this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
@@ -408,10 +451,25 @@ public class PlayerController : MonoBehaviour {
 	public void TurnInvincible(){
 		collectCount -= InvincibleCost;
 		isInvincible = true;
+		PowerUpSound.Play ();
 		invincibleTimer = InvincibleTime;
 		//Temp Code for visual effect
 		this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
 		//
+	}
+
+	//Get Tuba'd
+	public void TubaHit(float tubaForce, float tubaTime){
+		if (!isInvincible) {
+			isTubaHit = true;
+			tubaTimer = tubaTime;
+		}
+	}
+
+	//Spawn Jazz Trap
+	public void SetJazzTrap(){
+		collectCount -= JazzCost;
+		gameDriver.SpawnJazzTrap (this.gameObject, playerNum, JazzTime);
 	}
 
 
@@ -420,8 +478,8 @@ public class PlayerController : MonoBehaviour {
 		string tag = other.gameObject.tag;
 		if (tag == "Collectable") {
 			if (!other.gameObject.GetComponent<MusicBall> ().IsCollected ()) {
-				GetPowerup.Play();
 				other.gameObject.GetComponent<MusicBall> ().SetCollected ();
+				GetPowerUp.Play ();
 				if (isDoubleOn) {
 					collectCount += 2;
 				} else {
@@ -443,6 +501,7 @@ public class PlayerController : MonoBehaviour {
 			if (prevWay == 8 && wayPointNum == 0) {
 				if (curLap < laps) {
 					curLap += 1;
+					LapSound.Play ();
 				} else if (curLap == laps) {
 					int finishPlace = gameDriver.Finish (playerNum);
 					if (finishPlace == 1) {
@@ -451,6 +510,20 @@ public class PlayerController : MonoBehaviour {
 						victoryText.text = "You Lose!";
 					}
 				}
+			}
+		}
+		if (tag == "Jazz") {
+			int jazzNum = other.gameObject.GetComponent<JazzControl> ().playerNum;
+			if (jazzNum != -1 && jazzNum != playerNum) {
+				if (!isInvincible) {
+					isJazzed = true;
+					gameDriver.JazzSound.Play ();
+					maxMag -= JazzDecrease;
+					maxSpeed -= JazzDecrease;
+					this.gameObject.GetComponent<Renderer> ().material.SetColor ("_Color", new Color (186, 85, 211));
+					jazzTimer = JazzTime;
+				}
+				GameObject.Destroy (other);
 			}
 		}
 		/*
