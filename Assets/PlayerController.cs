@@ -498,6 +498,9 @@ public class PlayerController : MonoBehaviour {
 		if (tag == "Waypoint") {
 			int prevWay = wayPointNum;
 			wayPointNum = other.gameObject.GetComponent<Waypoint> ().wayNumber;
+			if (wayPointNum == 8 && prevWay != 0) {
+				wayPointNum = 0;
+			}
 			if (prevWay == 8 && wayPointNum == 0) {
 				if (curLap < laps) {
 					curLap += 1;
