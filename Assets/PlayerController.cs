@@ -64,6 +64,11 @@ public class PlayerController : MonoBehaviour {
 	public Sprite JazzSprite;
 	[Space(8)]
 
+	[Header("Materials")]
+	public Material InvincibleMat;
+	public Material DoubleMat;
+	public Material JazzMat;
+	[Space(8)]
 
 	[Header("Tilting")]
 	public float leanHorizontal;
@@ -86,6 +91,10 @@ public class PlayerController : MonoBehaviour {
 	//reference to Game Driver and other player----------
 	private GameDriver gameDriver;
 	private GameObject otherPlayer;
+
+	//Material Storage
+	private Material BodyMat;
+	private Material ClothesMat;
 
 	//Lap and Placement variables------------------------
 	private int curLap = 1;
@@ -136,18 +145,18 @@ public class PlayerController : MonoBehaviour {
 		gameDriver = GameObject.FindGameObjectWithTag ("GameDriver").GetComponent<GameDriver> ();
 		if (playerNum == 1) {
 			otherPlayer = GameObject.FindGameObjectWithTag ("Player2");
+			BodyMat = GameObject.FindGameObjectWithTag ("P1Body").GetComponent<Renderer> ().material;
+			ClothesMat = GameObject.FindGameObjectWithTag ("P1Clothes").GetComponent<Renderer> ().material;
 		} else {
 			otherPlayer = GameObject.FindGameObjectWithTag ("Player1");
+			BodyMat = GameObject.FindGameObjectWithTag ("P2Body").GetComponent<Renderer> ().material;
+			ClothesMat = GameObject.FindGameObjectWithTag ("P2Clothes").GetComponent<Renderer> ().material;
 		}
 		playerTransform = this.transform;
 		victoryText.text = "";
 		curRotation = playerTransform.rotation.eulerAngles;
 		plCamera.SetViewPort ((playerNum - 1) * 0.5f, 0f, 0.5f, 1.0f);
 		powerCost1.text = BoostCost.ToString ();
-
-		//Temp Code for visual effect
-		this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
-		//
 	}
 
 	public int CurrentLap{
@@ -221,14 +230,14 @@ public class PlayerController : MonoBehaviour {
 			doubleOrbTimer = Mathf.Max(0,doubleOrbTimer - Time.deltaTime);
 			if (doubleOrbTimer == 0) {
 				isDoubleOn = false;
-				this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+				RestoreMats ();
 			}
 		}
 		if (isInvincible) {
 			invincibleTimer = Mathf.Max(0,invincibleTimer - Time.deltaTime);
 			if (invincibleTimer == 0) {
 				isInvincible = false;
-				this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+				RestoreMats ();
 			}
 		}
 		if (isJazzed) {
@@ -237,7 +246,7 @@ public class PlayerController : MonoBehaviour {
 				isJazzed = false;
 				maxMag += JazzDecrease;
 				maxSpeed += JazzDecrease;
-				this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+				RestoreMats ();
 			}
 		}
 
@@ -251,7 +260,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 
-		collectText.text = "Orbs" + collectCount;
+		collectText.text = "Orbs: " + collectCount;
 		lapText.text = "Lap: " + curLap + "/" + laps;
 
 
@@ -426,6 +435,34 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	public void RestoreMats(){
+		if (playerNum == 1) {
+			GameObject.FindGameObjectWithTag ("P1Body").GetComponent<Renderer> ().sharedMaterial = BodyMat;
+			foreach (GameObject part in GameObject.FindGameObjectsWithTag ("P1Clothes")) {
+				part.GetComponent<Renderer> ().material = ClothesMat;
+			}
+		} else {
+			GameObject.FindGameObjectWithTag ("P2Body").GetComponent<Renderer> ().material = BodyMat;
+			foreach (GameObject part in GameObject.FindGameObjectsWithTag ("P2Clothes")) {
+				part.GetComponent<Renderer> ().sharedMaterial = ClothesMat;
+			}
+		}
+	}
+
+	public void ChangeMats(Material newMat){
+		if (playerNum == 1) {
+			GameObject.FindGameObjectWithTag ("P1Body").GetComponent<Renderer> ().sharedMaterial = newMat;
+			foreach (GameObject part in GameObject.FindGameObjectsWithTag ("P1Clothes")) {
+				part.GetComponent<Renderer> ().sharedMaterial = newMat;
+			}
+		} else {
+			GameObject.FindGameObjectWithTag ("P2Body").GetComponent<Renderer> ().sharedMaterial = newMat;
+			foreach (GameObject part in GameObject.FindGameObjectsWithTag ("P2Clothes")) {
+				part.GetComponent<Renderer> ().sharedMaterial = newMat;
+			}
+		}
+	}
+
 	public void Boost(){
 		collectCount -= BoostCost;
 		maxSpeed += BoostSpeed;
@@ -443,9 +480,7 @@ public class PlayerController : MonoBehaviour {
 		isDoubleOn = true;
 		PowerUpSound.Play ();
 		doubleOrbTimer = DoubleTime;
-		//Temp Code for visual effect
-		this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
-		//
+		ChangeMats (DoubleMat);
 	}
 
 	public void TurnInvincible(){
@@ -453,9 +488,7 @@ public class PlayerController : MonoBehaviour {
 		isInvincible = true;
 		PowerUpSound.Play ();
 		invincibleTimer = InvincibleTime;
-		//Temp Code for visual effect
-		this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
-		//
+		ChangeMats (InvincibleMat);
 	}
 
 	//Get Tuba'd
@@ -498,7 +531,7 @@ public class PlayerController : MonoBehaviour {
 		if (tag == "Waypoint") {
 			int prevWay = wayPointNum;
 			wayPointNum = other.gameObject.GetComponent<Waypoint> ().wayNumber;
-			if (wayPointNum == 8 && prevWay != 0) {
+			if (wayPointNum == 8 && prevWay == 0) {
 				wayPointNum = 0;
 			}
 			if (prevWay == 8 && wayPointNum == 0) {
@@ -523,10 +556,10 @@ public class PlayerController : MonoBehaviour {
 					gameDriver.JazzSound.Play ();
 					maxMag -= JazzDecrease;
 					maxSpeed -= JazzDecrease;
-					this.gameObject.GetComponent<Renderer> ().material.SetColor ("_Color", new Color (186, 85, 211));
+					ChangeMats (JazzMat);
 					jazzTimer = JazzTime;
 				}
-				GameObject.Destroy (other);
+				GameObject.Destroy (other.gameObject);
 			}
 		}
 		/*

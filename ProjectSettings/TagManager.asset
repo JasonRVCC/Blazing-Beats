@@ -15,6 +15,10 @@ TagManager:
   - Waypoint
   - Tuba
   - Jazz
+  - P1Body
+  - P1Clothes
+  - P2Body
+  - P2Clothes
   layers:
   - Default
   - TransparentFX

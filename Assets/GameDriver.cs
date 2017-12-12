@@ -14,6 +14,8 @@ public class GameDriver : MonoBehaviour {
 	public AudioSource TubaSound;
 	public AudioSource JazzSound;
 
+	public float BGMStartTime = 0f;
+
 	[Header("Power Up Prefabs")]
 	public GameObject TubaPrefab;
 	public float TubaSpawnDistance;
@@ -36,7 +38,7 @@ public class GameDriver : MonoBehaviour {
 		if (wayCompares.Length != wayPoints) {
 			Debug.LogError ("WARNING: array wayCompares is not equal to the number of way points in the level.");
 		}
-		BGM.time = 48.0f;
+		BGM.time = BGMStartTime;
 		BGM.Play ();
 		Ambeince.Play ();
 
