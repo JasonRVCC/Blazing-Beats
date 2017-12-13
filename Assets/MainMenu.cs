@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-public enum MenuState{Start,Main,Instructions,StageSelect,PlayerConfirm}
+public enum MenuState{Start,Main,Instructions,StageSelect,PlayerConfirm,Credits}
 
 public class MainMenu : MonoBehaviour {
 	[Header("General")]
@@ -26,6 +27,7 @@ public class MainMenu : MonoBehaviour {
 	[Space(8)]
 
 	[Header("Instructions")]
+	public GameObject Instructions;
 	[Space(8)]
 
 	[Header("StageSelect")]
@@ -41,6 +43,11 @@ public class MainMenu : MonoBehaviour {
 	public Image p2Confirm;
 	public Text p2Text;
 	public Text ReadyText;
+	[Space(8)]
+
+	[Header("Credits")]
+	public GameObject Credits;
+	public Button CreditsButton;
 	[Space(8)]
 
 
@@ -69,7 +76,7 @@ public class MainMenu : MonoBehaviour {
 		state = MenuState.Start;
 		BackText.gameObject.SetActive (false);
 		CoverScreen.gameObject.SetActive(false);
-		mainButtons = new Button []{InstructButton, StartGameButton, ExitButton};
+		mainButtons = new Button []{InstructButton, StartGameButton, CreditsButton, ExitButton};
 		stageButtons = new Button[]{ CityButton, DesertButton };
 		ReadyText.text = "";
 	}
@@ -107,16 +114,17 @@ public class MainMenu : MonoBehaviour {
 				}
 			} else {
 				if (Input.GetAxis ("LeftY1") < 0 || Input.GetAxis ("LeftY2") < 0) {
-					selectedButton += 1;
-					if (selectedButton >= mainButtons.Length) {
-						selectedButton = 0;
+					selectedButton -= 1;
+					if (selectedButton <= -1) {
+						selectedButton = mainButtons.Length - 1;
 					}
 					SetSelectedButton (selectedButton);
 					bufferTimer = axisBuffer;
 				} else if (Input.GetAxis ("LeftY1") >= 0.01 || Input.GetAxis ("LeftY2") >= 0.01) {
-					selectedButton -= 1;
-					if (selectedButton <= -1) {
-						selectedButton = mainButtons.Length - 1;
+					
+					selectedButton += 1;
+					if (selectedButton >= mainButtons.Length) {
+						selectedButton = 0;
 					}
 					SetSelectedButton (selectedButton);
 					bufferTimer = axisBuffer;
@@ -129,8 +137,32 @@ public class MainMenu : MonoBehaviour {
 			}
 			break;
 
+		case MenuState.Instructions:
+			if (Input.GetButtonDown ("Power21") || Input.GetButtonDown ("Power22")) {
+				state = MenuState.Main;
+				Instructions.SetActive (false);
+				CoverScreen.gameObject.SetActive (false);
+				BackText.gameObject.SetActive (false);
+				selectedButton = 0;
+				Main.SetActive (true);
+				SetSelectedButton (0);
+			}
+			break;
+
+		case MenuState.Credits:
+			if (Input.GetButtonDown ("Power21") || Input.GetButtonDown ("Power22")) {
+				Credits.SetActive (false);
+				state = MenuState.Main;
+				CoverScreen.gameObject.SetActive (false);
+				BackText.gameObject.SetActive (false);
+				selectedButton = 0;
+				Main.SetActive (true);
+				SetSelectedButton (0);
+			}
+			break;
+
 		case MenuState.StageSelect:
-			if (Input.GetButton ("Power21") || Input.GetButton ("Power22")) {
+			if (Input.GetButtonDown ("Power21") || Input.GetButtonDown ("Power22")) {
 				state = MenuState.Main;
 				StageSelect.SetActive (false);
 				stageButtons[selectedButton].gameObject.GetComponent<Image> ().color =  stageButtons[selectedButton].colors.normalColor;
@@ -150,13 +182,13 @@ public class MainMenu : MonoBehaviour {
 				if (Input.GetAxis ("LeftX1") < 0 || Input.GetAxis ("LeftX2") < 0) {
 					selectedButton -= 1;
 					if (selectedButton < 0) {
-						selectedButton = mainButtons.Length - 1;
+						selectedButton = stageButtons.Length - 1;
 					}
 					SetSelectedButton (selectedButton);
 					bufferTimer = axisBuffer;
 				} else if (Input.GetAxis ("LeftX1") >= 0.01 || Input.GetAxis ("LeftX2") >= 0.01) {
 					selectedButton += 1;
-					if (selectedButton >= mainButtons.Length) {
+					if (selectedButton >= stageButtons.Length) {
 						selectedButton = 0;
 					}
 					SetSelectedButton (selectedButton);
@@ -167,11 +199,12 @@ public class MainMenu : MonoBehaviour {
 			if (Input.GetButtonDown ("Boost1") || Input.GetButtonDown  ("Boost2") || Input.GetKeyDown  (KeyCode.Return) || Input.GetButtonDown ("Start1") || Input.GetButtonDown ("Start2")) {
 				stageButtons [selectedButton].gameObject.GetComponent<Image> ().color = stageButtons [selectedButton].colors.pressedColor;
 				stageButtons [selectedButton].onClick.Invoke ();
+				Debug.Log (stageSelected);
 			}
 			break;
 
 		case MenuState.PlayerConfirm:
-			if (Input.GetButton ("Power21") || Input.GetButton ("Power22")) {
+			if (Input.GetButtonDown ("Power21") || Input.GetButtonDown ("Power22")) {
 				state = MenuState.StageSelect;
 				PlayerConfirm.SetActive (false);
 				p1IsIn = false;
@@ -189,7 +222,7 @@ public class MainMenu : MonoBehaviour {
 
 			if (Input.GetButton ("Start1")) {
 				if (p2IsIn && p1IsIn) {
-					//Goto scene
+					GoToLevel ();
 				} else {
 					p1Confirm.color = new Color (p1Confirm.color.r, p1Confirm.color.g, p1Confirm.color.b, 0.9f);
 					p1Text.text = "Ready!";
@@ -202,8 +235,7 @@ public class MainMenu : MonoBehaviour {
 
 			if (Input.GetButton ("Start2")) {
 				if (p2IsIn && p1IsIn) {
-					//Goto scene
-					Debug.Log("START GAME");
+					GoToLevel ();
 				} else {
 					p2Confirm.color = new Color (p2Confirm.color.r, p2Confirm.color.g, p2Confirm.color.b, 0.9f);
 					p2Text.text = "Ready!";
@@ -220,6 +252,7 @@ public class MainMenu : MonoBehaviour {
 	}
 
 	public void SetSelectedButton(int buttonId){
+		Debug.Log ("Set");
 		switch (state) {
 		case MenuState.Main:
 			for (int i = 0; i < mainButtons.Length; i++) {
@@ -251,6 +284,18 @@ public class MainMenu : MonoBehaviour {
 		SetSelectedButton (0);
 		CoverScreen.gameObject.SetActive (true);
 		BackText.gameObject.SetActive (true);
+		Instructions.SetActive (true);
+	}
+
+	public void GoToCredits(){
+		state = MenuState.Credits;
+		Main.SetActive (false);
+		mainButtons [selectedButton].gameObject.GetComponent<Image> ().color = mainButtons [selectedButton].colors.normalColor;
+		selectedButton = 0;
+		SetSelectedButton (0);
+		CoverScreen.gameObject.SetActive (true);
+		BackText.gameObject.SetActive (true);
+		Credits.SetActive (true);
 	}
 
 	public void GoToStageSelect(){
@@ -261,6 +306,7 @@ public class MainMenu : MonoBehaviour {
 		CoverScreen.gameObject.SetActive (true);
 		BackText.gameObject.SetActive (true);
 		StageSelect.SetActive (true);
+		SetSelectedButton (0);
 	}
 
 	public void GoToPlayerConfirm(){
@@ -275,6 +321,14 @@ public class MainMenu : MonoBehaviour {
 		stageButtons[selectedButton].gameObject.GetComponent<Image> ().color =  stageButtons[selectedButton].colors.normalColor;
 		selectedButton = 0;
 		PlayerConfirm.SetActive (true);
+	}
+
+	public void GoToLevel(){
+		if (stageSelected == "City") {
+			SceneManager.LoadScene ("scene_02");
+		} else if (stageSelected == "Desert") {
+			SceneManager.LoadScene ("scene_0");
+		}
 	}
 
 	public void Exit(){

@@ -136,6 +136,8 @@ public class PlayerController : MonoBehaviour {
 	private bool isJazzed = false;
 	private float jazzTimer = 0f;
 
+	public Animator Anim;
+
 
 
 	// Use this for initialization
@@ -157,6 +159,7 @@ public class PlayerController : MonoBehaviour {
 		curRotation = playerTransform.rotation.eulerAngles;
 		plCamera.SetViewPort ((playerNum - 1) * 0.5f, 0f, 0.5f, 1.0f);
 		powerCost1.text = BoostCost.ToString ();
+		Anim = GetComponent<Animator> ();
 	}
 
 	public int CurrentLap{
@@ -259,6 +262,10 @@ public class PlayerController : MonoBehaviour {
 				transform.Rotate (0, TubaRotateSpeed * Time.deltaTime, 0);
 			}
 		}
+
+		float speed = GetComponent<Rigidbody> ().velocity.magnitude / maxSpeed * 2;
+
+		Anim.speed = speed;
 
 		collectText.text = "Orbs: " + collectCount;
 		lapText.text = "Lap: " + curLap + "/" + laps;
@@ -466,12 +473,13 @@ public class PlayerController : MonoBehaviour {
 	public void Boost(){
 		collectCount -= BoostCost;
 		maxSpeed += BoostSpeed;
-		if (this.GetComponent<Rigidbody> ().velocity.magnitude < 0.01 && this.GetComponent<Rigidbody> ().velocity.magnitude > -0.01) {
-			Debug.Log ("ADDDDDD");
+		/*
+		if (this.GetComponent<Rigidbody> ().velocity.magnitude < 0.01) {
+			this.GetComponent<Rigidbody> ().velocity = transform.forward;
 			this.GetComponent<Rigidbody> ().AddForce (transform.forward * 2000, ForceMode.Acceleration);
-			BoostSound.Play ();
-		}
-		this.GetComponent<Rigidbody> ().velocity = this.GetComponent<Rigidbody> ().velocity.normalized * maxSpeed;
+		}*/
+		this.GetComponent<Rigidbody> ().velocity = transform.forward * maxSpeed;
+		//BoostSound.Play ();
 		boostTimer = BoostSlowdown;
 	}
 
