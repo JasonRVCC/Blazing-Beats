@@ -55,7 +55,7 @@ public class GameDriver : MonoBehaviour {
 	public void SpawnTuba(GameObject player, float tubaTime){
 		Vector3 spawnPos = player.transform.position + player.transform.forward * TubaSpawnDistance;
 		spawnPos.y += 1.6f;
-		GameObject tuba = (GameObject)Instantiate (TubaPrefab, spawnPos, player.transform.rotation);
+		GameObject tuba = (GameObject)Instantiate (TubaPrefab, spawnPos, Quaternion.Inverse( player.transform.rotation) );
 		tuba.GetComponent<TubaControl>().StartDeath (tubaTime);
 		TubaSound.Play ();
 	}
