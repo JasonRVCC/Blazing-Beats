@@ -35,6 +35,12 @@ public class MainMenu : MonoBehaviour {
 	[Space(8)]
 
 	[Header("PlayerConfirm")]
+	public GameObject PlayerConfirm;
+	public Image p1Confirm;
+	public Text p1Text;
+	public Image p2Confirm;
+	public Text p2Text;
+	public Text ReadyText;
 	[Space(8)]
 
 
@@ -51,7 +57,7 @@ public class MainMenu : MonoBehaviour {
 
 	//Stage Select
 	private Button[] stageButtons;
-	private string stageSelected;
+	private string stageSelected = "";
 
 	//Player Confirm
 	private bool p1IsIn = false;
@@ -65,6 +71,7 @@ public class MainMenu : MonoBehaviour {
 		CoverScreen.gameObject.SetActive(false);
 		mainButtons = new Button []{InstructButton, StartGameButton, ExitButton};
 		stageButtons = new Button[]{ CityButton, DesertButton };
+		ReadyText.text = "";
 	}
 	
 	// Update is called once per frame
@@ -116,7 +123,7 @@ public class MainMenu : MonoBehaviour {
 				}
 			}
 
-			if (Input.GetButton ("Boost1") || Input.GetButton ("Boost2") || Input.GetKey (KeyCode.Return) || Input.GetButton("Start1") || Input.GetButton("Start2")) {
+			if (Input.GetButtonDown  ("Boost1") || Input.GetButtonDown  ("Boost2") || Input.GetKeyDown  (KeyCode.Return) || Input.GetButtonDown ("Start1") || Input.GetButtonDown ("Start2")) {
 				mainButtons [selectedButton].gameObject.GetComponent<Image> ().color = mainButtons [selectedButton].colors.pressedColor;
 				mainButtons [selectedButton].onClick.Invoke ();
 			}
@@ -157,11 +164,58 @@ public class MainMenu : MonoBehaviour {
 				}
 			}
 
-			if (Input.GetButton ("Boost1") || Input.GetButton ("Boost2") || Input.GetKey (KeyCode.Return) || Input.GetButton("Start1") || Input.GetButton("Start2")) {
+			if (Input.GetButtonDown ("Boost1") || Input.GetButtonDown  ("Boost2") || Input.GetKeyDown  (KeyCode.Return) || Input.GetButtonDown ("Start1") || Input.GetButtonDown ("Start2")) {
 				stageButtons [selectedButton].gameObject.GetComponent<Image> ().color = stageButtons [selectedButton].colors.pressedColor;
 				stageButtons [selectedButton].onClick.Invoke ();
 			}
 			break;
+
+		case MenuState.PlayerConfirm:
+			if (Input.GetButton ("Power21") || Input.GetButton ("Power22")) {
+				state = MenuState.StageSelect;
+				PlayerConfirm.SetActive (false);
+				p1IsIn = false;
+				p2IsIn = false;
+				p1Text.text = "Player 1 Press Start";
+				p2Text.text = "Player 2 Press Start";
+				p1Confirm.color = new Color (p1Confirm.color.r, p1Confirm.color.g, p1Confirm.color.b, 0.6f);
+				p2Confirm.color = new Color (p2Confirm.color.r, p2Confirm.color.g, p2Confirm.color.b, 0.6f);
+				ReadyText.text = "";
+				selectedButton = 0;
+				stageSelected = "";
+				StageSelect.SetActive (true);
+				SetSelectedButton (0);
+			}
+
+			if (Input.GetButton ("Start1")) {
+				if (p2IsIn && p1IsIn) {
+					//Goto scene
+				} else {
+					p1Confirm.color = new Color (p1Confirm.color.r, p1Confirm.color.g, p1Confirm.color.b, 0.9f);
+					p1Text.text = "Ready!";
+					p1IsIn = true;
+					if (p2IsIn) {
+						ReadyText.text = "Press Start";
+					}
+				}
+			}
+
+			if (Input.GetButton ("Start2")) {
+				if (p2IsIn && p1IsIn) {
+					//Goto scene
+					Debug.Log("START GAME");
+				} else {
+					p2Confirm.color = new Color (p2Confirm.color.r, p2Confirm.color.g, p2Confirm.color.b, 0.9f);
+					p2Text.text = "Ready!";
+					p2IsIn = true;
+					if (p1IsIn) {
+						ReadyText.text = "Press Start";
+					}
+				}
+			}
+			break;
+
+
 		}
 	}
 
@@ -206,6 +260,7 @@ public class MainMenu : MonoBehaviour {
 		selectedButton = 0;
 		CoverScreen.gameObject.SetActive (true);
 		BackText.gameObject.SetActive (true);
+		StageSelect.SetActive (true);
 	}
 
 	public void GoToPlayerConfirm(){
@@ -219,6 +274,7 @@ public class MainMenu : MonoBehaviour {
 		StageSelect.SetActive (false);
 		stageButtons[selectedButton].gameObject.GetComponent<Image> ().color =  stageButtons[selectedButton].colors.normalColor;
 		selectedButton = 0;
+		PlayerConfirm.SetActive (true);
 	}
 
 	public void Exit(){
