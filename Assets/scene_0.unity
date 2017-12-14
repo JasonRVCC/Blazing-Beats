@@ -2674,7 +2674,7 @@ Prefab:
     - target: {fileID: 224139162400593674, guid: 0969d68402cb00b4b8a8d71399d02f45,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: -8.411407
+      value: -8.411438
       objectReference: {fileID: 0}
     - target: {fileID: 224139162400593674, guid: 0969d68402cb00b4b8a8d71399d02f45,
         type: 2}
@@ -2751,6 +2751,22 @@ Prefab:
       propertyPath: m_AnchoredPosition.y
       value: -102.1992
       objectReference: {fileID: 0}
+    - target: {fileID: 114271998968863206, guid: 0969d68402cb00b4b8a8d71399d02f45,
+        type: 2}
+      propertyPath: InvincibleMat
+      value: 
+      objectReference: {fileID: -1518650592, guid: 9b52b7debb64a4357ba92937bf0b681c,
+        type: 3}
+    - target: {fileID: 114271998968863206, guid: 0969d68402cb00b4b8a8d71399d02f45,
+        type: 2}
+      propertyPath: JazzMat
+      value: 
+      objectReference: {fileID: 2100000, guid: 9e3e5574bc7cf4edaaefa1509cc86ea1, type: 2}
+    - target: {fileID: 114271998968863206, guid: 0969d68402cb00b4b8a8d71399d02f45,
+        type: 2}
+      propertyPath: DoubleMat
+      value: 
+      objectReference: {fileID: 2100000, guid: d0d719de0a4ad4f82862a81146a19480, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0969d68402cb00b4b8a8d71399d02f45, type: 2}
   m_IsPrefabParent: 0
@@ -6749,6 +6765,22 @@ Prefab:
       propertyPath: m_AnchoredPosition.y
       value: -102.1992
       objectReference: {fileID: 0}
+    - target: {fileID: 114157955439401162, guid: 71b1233f6eb7fa5429bdd9bffd531566,
+        type: 2}
+      propertyPath: InvincibleMat
+      value: 
+      objectReference: {fileID: -1518650592, guid: 9b52b7debb64a4357ba92937bf0b681c,
+        type: 3}
+    - target: {fileID: 114157955439401162, guid: 71b1233f6eb7fa5429bdd9bffd531566,
+        type: 2}
+      propertyPath: DoubleMat
+      value: 
+      objectReference: {fileID: 2100000, guid: 78070c3ac27bd48b5917cab6a1612cac, type: 2}
+    - target: {fileID: 114157955439401162, guid: 71b1233f6eb7fa5429bdd9bffd531566,
+        type: 2}
+      propertyPath: JazzMat
+      value: 
+      objectReference: {fileID: 2100000, guid: 9e3e5574bc7cf4edaaefa1509cc86ea1, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 71b1233f6eb7fa5429bdd9bffd531566, type: 2}
   m_IsPrefabParent: 0
