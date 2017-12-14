@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum CompareAxis{X,NegX,Y,NegY,Z,NegZ};
 
@@ -115,16 +116,7 @@ public class GameDriver : MonoBehaviour {
 		return false;
 	}
 
-	public int Finish(int playerNum){
-		for (int i = 0; i < placement.Length; i++) {
-			if (placement [i] == 0) {
-				placement [i] = playerNum;
-				return (i + 1);
-			}
-			if (placement [i] == playerNum) {
-				return (i + 1);
-			}
-		}
-		return 0;
+	public void Finish(int playerNum){
+		SceneManager.LoadScene ("Victory" + playerNum);
 	}
 }

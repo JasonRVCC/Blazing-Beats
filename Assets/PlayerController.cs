@@ -547,12 +547,7 @@ public class PlayerController : MonoBehaviour {
 					curLap += 1;
 					LapSound.Play ();
 				} else if (curLap == laps) {
-					int finishPlace = gameDriver.Finish (playerNum);
-					if (finishPlace == 1) {
-						victoryText.text = "You Win!";
-					} else {
-						victoryText.text = "You Lose!";
-					}
+					gameDriver.Finish (playerNum);
 				}
 			}
 		}
